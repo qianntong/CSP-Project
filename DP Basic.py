@@ -1,10 +1,11 @@
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
-n = 30 # set number of incoming containers to be stacked (must be less than 9 for this case)
+n = 100 # set number of incoming containers to be stacked (must be less than 9 for this case)
 
-H = 5 # max allowable stack height
-B = 6 # number of container columns
+H = 10 # max allowable stack height
+B = 10 # number of container columns
 
 C = np.arange(1,n+1) # generate 6 containers
 random.shuffle(C) # randomly assign priorities by shuffling
@@ -43,6 +44,8 @@ def stack(state, a, t):
     reshuffles = bubble_sort(cyclecopy)
     return cycle, reshuffles
     
+R_count = np.zeros(Clen+1)
+T_count = np.linspace(0, Clen, Clen+1)
 for t in range(0,Clen):
     V_c = np.array([])
     V_r = np.array([])
@@ -55,11 +58,11 @@ for t in range(0,Clen):
     print(f"Container {C[t]} will be placed in column {A}")
     print(f'Total number of reshuffles:{int(np.min(V_r))} \n')
     State[t+1] = V_c[A]
+    R_count[t+1] = np.min(V_r)
     if Actions[A][0] > 0:
         Actions[A][0] -= 1
     elif Actions[A][0] == 0:
         Actions = np.delete(Actions, A, 0)
-    #print(C[t], V_r)
 
 print("States as containers are placed:")
 print(State)
@@ -70,5 +73,7 @@ print(f"Final yard configuration:\n{State[-1]}\n")
     
 print(f"Incoming container priority order: {C}")
 
-# bad case: [1 2 3 8 7 4 6 5] 
-        
+plt.plot(T_count, R_count)
+plt.title("Container Reshuffles over Time")
+plt.xlabel("Time Elapsed")
+plt.ylabel("Number of Reshuffles")
