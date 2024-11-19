@@ -103,7 +103,7 @@ from helpers import bubble_sort_count, split_list
 naive_swaps = 0
 for i in split_list(C, H):
     naive_swaps += int(bubble_sort_count(i[::-1])) # calculate bubble sort swaps for reverse of arrays
-print(f"Number of swaps if naively stacking: {naive_swaps} \n")
+print(f"Number of swaps if naively stacking vertically: {naive_swaps} \n")
 
 print(f"Incoming container priority order: {C}") # for reference
 
@@ -113,4 +113,4 @@ plt.plot(T_count, R_count)
 plt.title("Container Reshuffles over Time")
 plt.xlabel("Time Elapsed")
 plt.ylabel("Number of Reshuffles")
-        
+plt.show()
