@@ -1,13 +1,16 @@
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import time
+
+start_time = time.time()
 
 n = 10 # set number of incoming containers to be stacked (must be less than 9 for this case)
 
 H = 4 # max allowable stack height
 B = 3 # number of container columns
 
-C = np.arange(1,n+1) # generate 6 containers
+C = np.arange(1,n+1) # generate containers
 random.shuffle(C) # randomly assign priorities by shuffling
 
 #C= np.array([1, 2, 3, 8, 7, 4, 6, 5]) # bad case for 3 x 3
@@ -74,10 +77,23 @@ print(State)
 
 print(f"\nTotal number of reshuffles to clear stack: {int(min(V_r))} \n")
 print(f"Final yard configuration:\n{State[-1]}\n")
-    
-print(f"Incoming container priority order: {C}")
 
+print(f"Total runtime: {round(time.time()-start_time, 5)} seconds\n")
+
+
+# compute reshuffles for naive approach where incoming containers are stacked vertically until filled
+from helpers import bubble_sort_count, split_list
+naive_swaps = 0
+for i in split_list(C, H):
+    naive_swaps += int(bubble_sort_count(i[::-1])) # calculate bubble sort swaps for reverse of arrays
+print(f"Number of swaps if naively stacking: {naive_swaps} \n")
+
+print(f"Incoming container priority order: {C}") # for reference
+
+
+# plot reshuffles over time
 plt.plot(T_count, R_count)
 plt.title("Container Reshuffles over Time")
 plt.xlabel("Time Elapsed")
 plt.ylabel("Number of Reshuffles")
+plt.show()

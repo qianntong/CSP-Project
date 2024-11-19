@@ -1,3 +1,5 @@
+import numpy as np
+
 def bubble_sort_count(arr):
   """Sorts a list of numbers using the bubble sort algorithm.
 
@@ -7,7 +9,7 @@ def bubble_sort_count(arr):
   Returns:
     The sorted list.
   """
-
+  arr = np.array(arr)
   n = len(arr)
   swaps = 0
 
@@ -27,7 +29,18 @@ def bubble_sort_count(arr):
   return swaps
 
 # usage
-#from DP_Basic import C
 #my_list = [0,12,22,5,6,13]
-num_swaps = bubble_sort_count(C)
-print(num_swaps)
+# num_swaps = bubble_sort_count()
+# print(num_swaps)
+
+def split_list(lst, n):
+    """Splits a list into smaller lists of length n."""
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+
+
+# usage
+# lst = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+# n = 3
+
+# result = split_list(lst, n)
+# print(result)
