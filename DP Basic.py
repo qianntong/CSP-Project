@@ -2,10 +2,10 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-n = 100 # set number of incoming containers to be stacked (must be less than 9 for this case)
+n = 10 # set number of incoming containers to be stacked (must be less than 9 for this case)
 
-H = 10 # max allowable stack height
-B = 10 # number of container columns
+H = 4 # max allowable stack height
+B = 3 # number of container columns
 
 C = np.arange(1,n+1) # generate 6 containers
 random.shuffle(C) # randomly assign priorities by shuffling
@@ -18,9 +18,11 @@ State = np.zeros((Clen+1, H, B))
 
 # define actions
 Actions = np.array([H-1,0])
+Action_Set = np.array([0])
 for b in range(1,B):
-    Actions= np.vstack((Actions, np.array([H-1, b])))
-print(Actions)
+    Actions = np.vstack((Actions, np.array([H-1, b])))
+    Action_Set = np.append(Action_Set, b)
+print(Action_Set)
 
 
 
@@ -55,7 +57,8 @@ for t in range(0,Clen):
         V_r = np.append(V_r, V_q[1]) 
     V_c = np.reshape(V_c, (len(Actions),H,B))                     
     A = int(np.argmin(V_r))
-    print(f"Container {C[t]} will be placed in column {A}")
+    Q = Action_Set[A]
+    print(f"Container {C[t]} will be placed in column {Q}")
     print(f'Total number of reshuffles:{int(np.min(V_r))} \n')
     State[t+1] = V_c[A]
     R_count[t+1] = np.min(V_r)
@@ -63,6 +66,7 @@ for t in range(0,Clen):
         Actions[A][0] -= 1
     elif Actions[A][0] == 0:
         Actions = np.delete(Actions, A, 0)
+        Action_Set = np.delete(Action_Set, A)
 
 print("States as containers are placed:")
 print(State)
