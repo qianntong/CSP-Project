@@ -1,0 +1,35 @@
+import numpy as np
+import time
+
+start_time = time.time()
+
+def stacker(cycle, con):
+    X, Y = cycle.shape      #x is the row, starting from top; y is column from left
+    for x in range (0, X):
+        for y in range (0, Y):
+            #print((x, y), (x+1, y))
+            cycle_cop = cycle.copy()
+            if x == H-1:
+                if cycle[x][y] == 0:
+                    cycle_cop[x][y] = con
+                    print(x, y)
+                    print(cycle_cop)
+            elif cycle[x][y] == 0:
+                if cycle[x+1][y] != 0:
+                    cycle_cop[x][y] = con
+                    print(x, y)
+                    print(cycle_cop)
+        
+test = np.array([[0, 0, 0],
+                 [0, 0, 0],
+                 [0, 0, 0],
+                 [1, 0, 0]])
+
+H, B = test.shape
+
+stacker(test, 8)        
+
+#in progress
+
+    
+
