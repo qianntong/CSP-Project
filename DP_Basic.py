@@ -5,7 +5,7 @@ import time
 
 start_time = time.time()
 
-n = 10 # set number of incoming containers to be stacked (must be less than 9 for this case)
+n = 10 # set number of incoming containers to be stacked
 
 H = 4 # max allowable stack height
 B = 3 # number of container columns
