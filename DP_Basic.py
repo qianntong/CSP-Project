@@ -10,6 +10,9 @@ n = 10 # set number of incoming containers to be stacked (must be less than 9 fo
 H = 4 # max allowable stack height
 B = 3 # number of container columns
 
+if n > H*B:
+    raise ValueError('There are more containers than spaces for containers.')
+
 C = np.arange(1,n+1)    # generate n containers
 random.shuffle(C)       # randomly assign priorities by shuffling
 Clen = len(C)           # total number of containers
