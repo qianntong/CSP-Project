@@ -18,7 +18,8 @@ def stacker(cycle, con, H):
                     cycle_cop[x][y] = con
                     states = np.vstack((states, cycle_cop))
     states = np.delete(states, (0), axis=0)
-    states = np.reshape(states, (Y, X, Y))
+    L = len(states)
+    states = np.reshape(states, (int(L/X), X, Y))
     return states
 
 def cycler(state, containers):
@@ -38,8 +39,6 @@ def cycler(state, containers):
         
 
 test = np.array([[0, 0, 0],
-                 [0, 0, 0],
-                 [0, 0, 0],
                  [1, 0, 0]])
 print(test)
 C = np.array([5, 4, 3])
