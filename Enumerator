@@ -22,6 +22,18 @@ def stacker(cycle, con, H):
     states = np.reshape(states, (int(L/X), X, Y))
     return states
 
+def bubble_sort(cycle):
+    Ylen, Ycol = cycle.shape
+    swaps = 0
+    for i in range (0, Ycol):
+        col = cycle[:,i]
+        for j in range(Ylen):
+            for k in range(0, Ylen-j-1):
+                if col[k] > col[k+1]:
+                    col[k], col[k+1] = col[k+1], col[k]
+                    swaps += 1
+    return swaps
+
 def cycler(state, containers):
     H, B = state.shape
     tot_state = np.zeros(B)
@@ -35,7 +47,12 @@ def cycler(state, containers):
     fin_state = np.delete(tot_state, (0), axis = 0)
     N = len(fin_state)
     res_state = np.reshape(fin_state, (int(N/H), H, B))
-    return res_state
+    Rlen = len(res_state)
+    Reshuffles = np.zeros(Rlen)
+    for i in range (0, Rlen):
+        sort_MX = res_state[i].copy()
+        Reshuffles[i] = bubble_sort(sort_MX)
+    return res_state, Reshuffles
         
 
 test = np.array([[0, 0, 0],
@@ -43,8 +60,3 @@ test = np.array([[0, 0, 0],
 print(test)
 C = np.array([5, 4, 3])
 print(cycler(test, C))     
-
-
-
-    
-
