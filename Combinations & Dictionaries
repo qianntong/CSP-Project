@@ -29,5 +29,55 @@ for i in range(0, N12):
     for j in range(N12, N1):
         if len(np.intersect1d(new_series[i], new_series[j])) == 0:
             new_new_series[i] = new_series[i], new_series[j]
-new_new_series[N12] = new_series[N-1], np.array([0, 0, 0])
-print(new_new_series)
+new_new_series[N12] = np.array([0, 0, 0]), new_series[N-1]
+#print(new_new_series)
+
+big_list = [0, 0, 0, 0]
+for i in new_new_series:
+    couple = new_new_series[i]
+    L = len(couple)
+    new_couple = [0, 0]
+    for j in range(0, L):
+        test = np.sort(couple[j])[::-1]
+        while len(test) < Alen:
+            test = np.append(test, 0)
+        new_couple[j] = test
+    big_list[i] = new_couple
+print(big_list)
+
+def bubble_sort(col):
+    Ylen = len(col)
+    swaps = 0
+    for j in range(Ylen):
+        for k in range(0, Ylen-j-1):
+            if col[k] < col[k+1]:
+                col[k], col[k+1] = col[k+1], col[k]
+                swaps += 1
+    return swaps
+
+def zero_delete(arr):
+    N = len(arr)
+    new_arr = np.array([])
+    for i in range (0, N):
+        if arr[i] != 0:
+            new_arr = np.append(new_arr, arr[i])
+    while len(new_arr) > N:
+        new_arr = np.append(new_arr, 0)
+    return new_arr
+
+states = big_list
+shuffles = np.zeros((Alen+1, 2))
+for i in range(0, Alen+1):
+    subshuffle = []
+    for j in range(0,2):
+        test = states[i][j]
+        test = np.append(test, 3)
+        test = zero_delete(test)
+        value = bubble_sort(test.copy())
+        shuffles[i][j] = value
+        
+print(shuffles)
+for i in shuffles:
+    choice = np.argmin(i)
+    print(choice)
+    
