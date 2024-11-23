@@ -1,0 +1,28 @@
+import itertools as it
+import numpy as np
+
+C = np.array([2, 1, 4, 3])
+C_next = np.array([2, 1, 4 ]) #stacking container 3
+
+A = np.sort(C_next)
+Alen = len(A)
+
+B = 2
+
+series = {}
+for i in range (1, Alen+1):
+    series[i] = it.combinations(A, r = i)
+
+new_series = {}
+j = 0
+for i in range(1, Alen+1):
+    for p in series[i]:
+        p_array = np.array(p)     
+        new_series[j] = p_array
+        j += 1
+
+print(new_series)
+
+for i in new_series:
+    valid = np.isin(C_next, i)
+    #print(valid)
