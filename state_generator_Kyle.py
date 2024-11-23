@@ -1,7 +1,7 @@
 import numpy as np
 
 B = 2
-C = np.array([2, 1, 4, 3])
+C = np.array([2, 1, 4, 3, 5])
 
 i = C[-1] # current container to be placed
 
@@ -24,7 +24,7 @@ def swap_elements(list_in1, list_in2, index1, index2):
 
 list_of_feasible_states = [[col1,col2]] # add initial state
 
-for i in range(0,len(C)-1):
+for i in range(0,len(C)):
   print(i)
   list_of_feasible_states.append(swap_elements(col1, col2, i, i)) # swap elements at each index and add to list of feasible states
   
