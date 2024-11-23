@@ -1,7 +1,7 @@
 import numpy as np
 
 B = 2
-C = np.array([2, 1, 4, 3, 5])
+C = np.array([2, 1, 4, 3])
 
 i = C[-1] # current container to be placed
 
@@ -30,4 +30,4 @@ for i in range(0,len(C)):
   
 print(list_of_feasible_states) # returns all feasible states for a B = 2 configuration and n = 4 containers at i = 4
 
-# Works for B = 2, will need to adjust for larger B
+# Works for B = 2 and n = 4, will need to adjust for larger B or n (nested for loops)
