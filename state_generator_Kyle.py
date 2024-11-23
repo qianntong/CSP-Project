@@ -24,7 +24,7 @@ def swap_elements(list_in1, list_in2, index1, index2):
 
 list_of_feasible_states = [[col1,col2]] # add initial state
 
-for i in range(0,len(C)):
+for i in range(0,len(C)-1):
   print(i)
   list_of_feasible_states.append(swap_elements(col1, col2, i, i)) # swap elements at each index and add to list of feasible states
   
