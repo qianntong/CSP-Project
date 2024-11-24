@@ -57,22 +57,24 @@ def main(Containers, B):
         L = len(couple)
         new_couple = [0]*B
         for j in range(0, L):
-            test = np.sort(couple[j])[::-1]
-            while len(test) < Slen:
-                test = np.append(test, 0)
-            new_couple[j] = test
+            element = np.sort(couple[j])[::-1]
+            while len(element) < Slen:
+                element = np.append(element, 0)
+            new_couple[j] = element
+        print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
         big_list[i] = new_couple
     states = big_list
     shuffles = np.zeros((NSP, B))
     for i in range(0, NSP):
         for j in range(0,2):
-            test = states[i][j]
-            test = np.append(test, C_next)
-            test = zero_delete(test)
-            value = bubble_sort(test.copy())
+            column = states[i][j]
+            column = np.append(column, C_next)
+            column = zero_delete(column)
+            value = bubble_sort(column.copy())
+            print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
             shuffles[i][j] = value
     return shuffles
 
-test = np.array([2, 1, 4])
+test = np.array([2, 1, 4, 3])
 
 print(main(test, 2))
