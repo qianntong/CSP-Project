@@ -51,7 +51,7 @@ def main(Containers, B):
                 Stack_pairs[i] = Stack_combos[i], Stack_combos[j]
     Stack_pairs[N12] = np.zeros(Slen), Stack_combos[N-1]
     NSP = len(Stack_pairs)
-    big_list = [0]*(NSP)
+    states = [0]*(NSP)
     for i in Stack_pairs:
         couple = Stack_pairs[i]
         L = len(couple)
@@ -61,9 +61,8 @@ def main(Containers, B):
             while len(element) < Slen:
                 element = np.append(element, 0)
             new_couple[j] = element
-        #print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
-        big_list[i] = new_couple
-    states = big_list
+        print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
+        states[i] = new_couple
     shuffles = np.zeros((NSP, B))
     for i in range(0, NSP):
         for j in range(0,B):
@@ -71,9 +70,10 @@ def main(Containers, B):
             column = np.append(column, C_next)
             column = zero_delete(column)
             value = bubble_sort(column.copy())
-            #print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
+            print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
             shuffles[i][j] = value
-    return big_list
+    return shuffles, states
+    
 
 def matx_gen(listarr):
     matx_list = [0]*len(listarr)
@@ -83,14 +83,20 @@ def matx_gen(listarr):
         i += 1
     return matx_list
 
+def min_finder(matx):
+    baseline = np.inf
+    Mlen = len(matx)
+    for i in range(0, Mlen):
+        if np.min(matx[i]) < baseline:
+            baseline = np.min(matx[i])
+    for i in range(0, Mlen):
+        if np.min(matx[i]) == baseline:
+            print(np.argmin(matx[i]), i)
+
 q = np.array([2, 1, 4, 3])
 r = np.array([2, 1, 4])
 s = np.array([2, 1])
 
-qmain = main(q, 2)
-rmain = main(r, 2)
-smain = main(s, 2)
-
-print(matx_gen(qmain))
-print(matx_gen(rmain))
-print(matx_gen(smain))
+shuffs, stats = main(q, 2)
+print(shuffs)
+print(min_finder(shuffs))
