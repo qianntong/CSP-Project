@@ -61,20 +61,36 @@ def main(Containers, B):
             while len(element) < Slen:
                 element = np.append(element, 0)
             new_couple[j] = element
-        print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
+        #print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
         big_list[i] = new_couple
     states = big_list
     shuffles = np.zeros((NSP, B))
     for i in range(0, NSP):
-        for j in range(0,2):
+        for j in range(0,B):
             column = states[i][j]
             column = np.append(column, C_next)
             column = zero_delete(column)
             value = bubble_sort(column.copy())
-            print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
+            #print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
             shuffles[i][j] = value
-    return shuffles
+    return big_list
 
-test = np.array([2, 1, 4, 3])
+def matx_gen(listarr):
+    matx_list = [0]*len(listarr)
+    i = 0
+    for L in listarr:
+        matx_list[i] = np.column_stack((L[0][::-1], L[1][::-1]))
+        i += 1
+    return matx_list
 
-print(main(test, 2))
+q = np.array([2, 1, 4, 3])
+r = np.array([2, 1, 4])
+s = np.array([2, 1])
+
+qmain = main(q, 2)
+rmain = main(r, 2)
+smain = main(s, 2)
+
+print(matx_gen(qmain))
+print(matx_gen(rmain))
+print(matx_gen(smain))
