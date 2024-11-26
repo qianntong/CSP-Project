@@ -61,7 +61,7 @@ def main(Containers, B):
             while len(element) < Slen:
                 element = np.append(element, 0)
             new_couple[j] = element
-        print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
+        #print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
         states[i] = new_couple
     shuffles = np.zeros((NSP, B))
     for i in range(0, NSP):
@@ -70,7 +70,7 @@ def main(Containers, B):
             column = np.append(column, C_next)
             column = zero_delete(column)
             value = bubble_sort(column.copy())
-            print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
+            #print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
             shuffles[i][j] = value
     return shuffles, states
     
@@ -94,9 +94,30 @@ def min_finder(matx):
             print(np.argmin(matx[i]), i)
 
 q = np.array([2, 1, 4, 3])
-r = np.array([2, 1, 4])
-s = np.array([2, 1])
+
+def match(states):
+    Slen = len(states)
+
+def removal(matx, r):
+    row, col = matx.shape
+    for i in range(0, row):
+        for j in range(0, col):
+            if matx[i, j] == r:
+                matx[i, j] = 0
+    for j in range(0, col):
+        matx[:,j] = np.sort(matx[:,j])
+    if matx[row-1][0] > matx[row-1][1]:
+        matx = np.flip(matx, axis=1)
+    return matx
+
+
 
 shuffs, stats = main(q, 2)
-print(shuffs)
-print(min_finder(shuffs))
+print(stats)
+for i in range (0,4):
+    print(removal(matx_gen(stats)[i], 4))
+
+print(np.array_equal(removal(matx_gen(stats)[3], 4), removal(matx_gen(stats)[1], 4)))
+
+
+links = { "S410":{} }
