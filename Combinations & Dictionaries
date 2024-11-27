@@ -61,7 +61,7 @@ def main(Containers, B):
             while len(element) < Slen:
                 element = np.append(element, 0)
             new_couple[j] = element
-        print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
+        #print(f" State {i} has {B} columns: column 0 is {new_couple[0]} and column 1 is {new_couple[1]}")
         states[i] = new_couple
     shuffles = np.zeros((NSP, B))
     for i in range(0, NSP):
@@ -70,7 +70,7 @@ def main(Containers, B):
             column = np.append(column, C_next)
             column = zero_delete(column)
             value = bubble_sort(column.copy())
-            print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
+            #print(f"If you place container {C_next} in column {j} of state {i} there will be {value} reshuffles")
             shuffles[i][j] = value
     return shuffles, states
     
@@ -93,10 +93,74 @@ def min_finder(matx):
         if np.min(matx[i]) == baseline:
             print(np.argmin(matx[i]), i)
 
+def removal(matx, r):
+    row, col = matx.shape
+    for i in range(0, row):
+        for j in range(0, col):
+            if matx[i, j] == r:
+                matx[i, j] = 0
+    for j in range(0, col):
+        matx[:,j] = np.sort(matx[:,j])
+    if matx[row-1][0] > matx[row-1][1]:
+        matx = np.flip(matx, axis=1)
+    return matx
+
 q = np.array([2, 1, 4, 3])
 r = np.array([2, 1, 4])
 s = np.array([2, 1])
 
-shuffs, stats = main(q, 2)
-print(shuffs)
-print(min_finder(shuffs))
+qshuffs, qstats = main(q, 2)
+rshuffs, rstats = main(r, 2)
+sshuffs, sstats = main(s, 2)
+
+def dict_gen(matx, count):
+    nodes = {}
+    Mlen = len(matx)
+    for i in range (0, Mlen):
+        nodes[count] = matx[i]
+        count += 1
+    return nodes, count
+
+def equivalency(MX1, MX2):
+    L1 = len(MX1)
+    L2 = len(MX2)
+    if L2 > L1:
+        MX2 = np.delete(MX2, 0, 0)
+    elif L1 > L2:
+        MX1 = np.delete(MX1, 0, 0)
+    else:
+        MX1 = MX1
+    if np.array_equal(MX1, MX2) == True:
+        return True
+    elif np.array_equal(np.flip(MX1, axis = 1), MX2) == True:
+        return True
+    else:
+        return False
+
+count = 1
+qnodes, qcount = dict_gen(matx_gen(qstats), count)
+rnodes, rcount = dict_gen(matx_gen(rstats), qcount)
+
+print(qnodes)
+print(rnodes)
+
+q_remove = {}
+for i in qnodes:
+    q_remove[i] = removal(qnodes[i], 4)
+
+links = {}
+for j in rnodes:
+    current = np.array([])
+    for i in qnodes:
+        if equivalency(qnodes[i], rnodes[j]) == True:
+            current = np.append(current, i)
+    links[j] = current
+print(links)
+                  
+                
+                
+                
+                
+                
+                
+                
