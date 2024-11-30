@@ -105,21 +105,15 @@ def removal(matx, r):
         matx = np.flip(matx, axis=1)
     return matx
 
-q = np.array([2, 1, 4, 3])
-r = np.array([2, 1, 4])
-s = np.array([2, 1])
-
-qshuffs, qstats = main(q, 2)
-rshuffs, rstats = main(r, 2)
-sshuffs, sstats = main(s, 2)
-
-def dict_gen(matx, count):
+def dict_gen(matx, shuffles, level):
     nodes = {}
     Mlen = len(matx)
+    count = 1
     for i in range (0, Mlen):
-        nodes[count] = matx[i]
+        index = str(level)+str(count)
+        nodes[int(index)] = (matx[i], shuffles[i])
         count += 1
-    return nodes, count
+    return nodes
 
 def equivalency(MX1, MX2):
     L1 = len(MX1)
@@ -137,25 +131,73 @@ def equivalency(MX1, MX2):
     else:
         return False
 
-count = 1
-qnodes, qcount = dict_gen(matx_gen(qstats), count)
-rnodes, rcount = dict_gen(matx_gen(rstats), qcount)
+def match(nodes1, nodes2, con):
+    links = {}
+    for i in nodes1:
+        test = removal(nodes1[i][0], con)
+        for j in nodes2:
+            if equivalency(test, nodes2[j][0]) == True:
+                links[i] = j
+    return links
 
-print(qnodes)
-print(rnodes)
+def flip(diction):
+    new_dict = {}
+    for i in diction:
+        for j in diction:
+            if i != j:
+                if diction[i] == diction[j]:
+                    new_dict[diction[i]] = np.array([i, j])
+    return new_dict
 
-q_remove = {}
-for i in qnodes:
-    q_remove[i] = removal(qnodes[i], 4)
+def add_cost(diction, nodes):
+    new_dict = {}
+    for i in diction:
+        sub_dict = {}
+        count = 0
+        for j in diction[i]:
+            sub_dict[j] = nodes[i][1][count]
+            count += 1
+        new_dict[i] = sub_dict
+    return new_dict
 
+def final_cost(nodes, level):  
+    count = 1      
+    new_dict = {}
+    for i in nodes:
+        temp_dict = {}
+        for j in nodes[i][1]:
+            index = str(level)+str(count)
+            temp_dict[int(index)] = j
+            count += 1
+        new_dict[i] = temp_dict
+    return new_dict
+        
+q = np.array([2, 1, 4, 3])
+r = np.array([2, 1, 4])
+s = np.array([2, 1])
+t = np.array([2])
+
+qshuffs, qstats = main(q, 2)
+rshuffs, rstats = main(r, 2)
+sshuffs, sstats = main(s, 2)
+
+level = 4
+qnodes = dict_gen(matx_gen(qstats), qshuffs, 3)
+rnodes = dict_gen(matx_gen(rstats), rshuffs, 2)
+snodes = dict_gen(matx_gen(sstats), sshuffs, 1)
+        
 links = {}
-for j in rnodes:
-    current = np.array([])
-    for i in qnodes:
-        if equivalency(qnodes[i], rnodes[j]) == True:
-            current = np.append(current, i)
-    links[j] = current
-print(links)
+linksq = match(qnodes, rnodes, 4)
+linksr = match(rnodes, snodes, 1)
+
+flinksq = flip(linksq)
+flinksr = flip(linksr)
+print(final_cost(qnodes, 4))
+print(add_cost(flinksq, rnodes))
+print(add_cost(flinksr, snodes))
+
+
+
                   
                 
                 
