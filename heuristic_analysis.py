@@ -132,7 +132,7 @@ def generate_unique_permutations(N, n):
         permutation = tuple(digits)
         if permutation not in permutations:
             permutations.append(permutation)
-
+    #print(permutations)
     return permutations
 
 # run multiple iterations
@@ -158,10 +158,10 @@ def run_analysis(N, n, H, B):
 ###########################################
 
 N = 1000 # number of iterations
-n = 10   # number of containers
-H = 4   # max allowable stack height
-B = 3    # number of columns to place containers
-
+n = 36   # number of containers
+H = 6    # max allowable stack height
+B = 6    # number of columns to place containers
+#generate_unique_permutations(24, 4)
 # call the function to run heuristic and print results in terminal
 df = run_analysis(N, n, H, B)
 

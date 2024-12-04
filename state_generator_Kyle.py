@@ -37,7 +37,7 @@ list_of_feasible_states = []
 for i in range(len(C))[::-1]:
   current_container = i
   print(f"Current container: {C[current_container]}")
-  prev_containers = C[:current_container][::-1]
+  prev_containers = C[:current_container]
   prev_containers_sorted = np.sort(prev_containers)[::-1]
   print(f"Previous containers: {prev_containers}")
   print(f"Previous containers sorted: {prev_containers_sorted}")
