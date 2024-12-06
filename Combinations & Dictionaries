@@ -143,8 +143,8 @@ s = np.array([2, 1])
 t = np.array([2])
 
 qshuffs, qstats = main(q, 2)
-print(qshuffs)
-print(qstats)
+#print(qshuffs)
+#print(qstats)
 rshuffs, rstats = main(r, 2)
 sshuffs, sstats = main(s, 2)
 
@@ -154,7 +154,7 @@ rnodes = dict_gen(matx_gen(rstats), rshuffs, 2)
 snodes = dict_gen(matx_gen(sstats), sshuffs, 1)
 
 
-print(qnodes)
+#print(qnodes)
 
 def upper(nodes, level):
     a = int(str(level+1)+"1")
@@ -166,6 +166,15 @@ def upper(nodes, level):
             a += 1
         U[i] = u
     return U
+
+def lower(state, con, col):
+    stat = state.copy()
+    choice = (stat[col]==0).argmax(axis=0)
+    stat[col][choice] = 4
+    count = 0
+    for i in stat:
+        count += bubble_sort(i)
+    return count
 
 def next_state(nodes, level):
     a = int(str(level-1)+"1")
@@ -181,6 +190,7 @@ def next_state(nodes, level):
             truth = equivalency(removal(nodes[keys[i]][0], 4), removal(nodes[keys[j]][0], 4))
             #print(truth)
             if truth == True:
+                #print(nodes[keys[j]][0])
                 #print(removal(nodes[keys[j]][0], 4))
                 #print(a)
                 S[a] = removal(nodes[keys[j]][0], 4)
@@ -188,7 +198,11 @@ def next_state(nodes, level):
                 a += 1
     return V
     
-print(upper(qnodes, 3))
+test = np.array([[2, 1, 0],
+                [0, 0, 0]])
+print(lower(test, 4, 1))
+print(lower(test, 4, 0))
+#print(upper(qnodes, 3))
 #print(next_state(qnodes, 3))
 #print(Statesq)
 #print(Valueq)
