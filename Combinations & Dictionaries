@@ -76,7 +76,7 @@ def matx_gen(listarr):
     matx_list = [0]*len(listarr)
     i = 0
     for L in listarr:
-        matx_list[i] = np.column_stack((L[0][::-1], L[1][::-1]))
+        matx_list[i] = np.column_stack((L[0], L[1]))
         i += 1
     return matx_list
 
@@ -97,10 +97,8 @@ def removal(MX, r):
         for j in range(0, col):
             if matx[i, j] == r:
                 matx[i, j] = 0
-    for j in range(0, col):
-        matx[:,j] = np.sort(matx[:,j])
-    if matx[row-1][0] > matx[row-1][1]:
-        matx = np.flip(matx, axis=1)
+    for j in range(0, row):
+        matx[j] = np.sort(matx[j])[::-1]
     return matx
 
 def dict_gen(matx, shuffles, level):
@@ -114,17 +112,9 @@ def dict_gen(matx, shuffles, level):
     return nodes
 
 def equivalency(MX1, MX2):
-    L1 = len(MX1)
-    L2 = len(MX2)
-    if L2 > L1:
-        MX2 = np.delete(MX2, 0, 0)
-    elif L1 > L2:
-        MX1 = np.delete(MX1, 0, 0)
-    else:
-        MX1 = MX1
     if np.array_equal(MX1, MX2) == True:
         return True
-    elif np.array_equal(np.flip(MX1, axis = 1), MX2) == True:
+    elif np.array_equal(np.flip(MX1, axis = 0), MX2) == True:
         return True
     else:
         return False
@@ -161,25 +151,20 @@ qnodes = dict_gen(matx_gen(qstats), qshuffs, 3)
 rnodes = dict_gen(matx_gen(rstats), rshuffs, 2)
 snodes = dict_gen(matx_gen(sstats), sshuffs, 1)
 
-def subtraction(nodes, con, level):
-    V = {}
-    S = {}
-    index = int(str(level-1)+str(1))
-    for i in nodes:
-        for j in nodes:
-            if len(V) < len(nodes)/2:
-                if i != j:
-                    test = removal(nodes[i][0], con)-removal(nodes[j][0], con)
-                    if np.all(test == 0):
-                        V[index] = {i: nodes[i][1][0], j: nodes[i][1][1]}
-                        S[index] = removal(nodes[i][0], con)
-                        index += 1
-    return V, S
 
-Valueq, Statesq = subtraction(qnodes, 4, 3)
-Valuer, Statesr = subtraction(rnodes, 1, 2)
 print(qnodes)
-print(removal(qnodes[31][0],4))
+Qlen = len(qnodes)
+qkeys = np.array([])
+for i in qnodes:
+    qkeys = np.append(qkeys, i)
+
+print(qkeys)
+for i in range(0, Qlen):
+    for j in (i+1, Qlen):
+        print(qkeys[i], qkeys[j])
+            #print(equivalency(removal(qnodes[i][0], 4), removal(qnodes[j][0], 4)))
+    
+    
 #print(Statesq)
 #print(Valueq)
 #print(Statesr)
