@@ -153,21 +153,30 @@ snodes = dict_gen(matx_gen(sstats), sshuffs, 1)
 
 
 #print(qnodes)
-Qlen = len(qnodes)
-qkeys = np.array([])
-for i in qnodes:
-    qkeys = np.append(qkeys, i)
 
-#print(qkeys)
-for i in range(0, Qlen):
-    for j in range(i+1, Qlen):
-        print(qkeys[i], qkeys[j])
-        truth = equivalency(removal(qnodes[qkeys[i]][0], 4), removal(qnodes[qkeys[j]][0], 4))
-        print(truth)
-        if truth == True:
-            print(removal(qnodes[qkeys[j]][0], 4))
+
+def next_state(nodes, level):
+    a = int(str(level-1)+"1")
+    S = {}
+    V = {}
+    L = len(nodes)
+    keys = np.array([])
+    for i in nodes:
+        keys = np.append(keys, i)
+    for i in range(0, L):
+        for j in range(i+1, L):
+            #print(keys[i], keys[j])
+            truth = equivalency(removal(nodes[keys[i]][0], 4), removal(nodes[keys[j]][0], 4))
+            #print(truth)
+            if truth == True:
+                #print(removal(nodes[keys[j]][0], 4))
+                #print(a)
+                S[a] = removal(nodes[keys[j]][0], 4)
+                V[a] = {keys[i]: np.min(nodes[keys[i]][1]) , keys[j]: np.min(nodes[keys[j]][1])}
+                a += 1
+    return V
     
-    
+print(next_state(qnodes, 3))
 #print(Statesq)
 #print(Valueq)
 #print(Statesr)
