@@ -152,17 +152,20 @@ rnodes = dict_gen(matx_gen(rstats), rshuffs, 2)
 snodes = dict_gen(matx_gen(sstats), sshuffs, 1)
 
 
-print(qnodes)
+#print(qnodes)
 Qlen = len(qnodes)
 qkeys = np.array([])
 for i in qnodes:
     qkeys = np.append(qkeys, i)
 
-print(qkeys)
+#print(qkeys)
 for i in range(0, Qlen):
-    for j in (i+1, Qlen):
+    for j in range(i+1, Qlen):
         print(qkeys[i], qkeys[j])
-            #print(equivalency(removal(qnodes[i][0], 4), removal(qnodes[j][0], 4)))
+        truth = equivalency(removal(qnodes[qkeys[i]][0], 4), removal(qnodes[qkeys[j]][0], 4))
+        print(truth)
+        if truth == True:
+            print(removal(qnodes[qkeys[j]][0], 4))
     
     
 #print(Statesq)
