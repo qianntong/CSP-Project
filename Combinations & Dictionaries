@@ -170,11 +170,18 @@ def upper(nodes, level):
 def lower(state, con, col):
     stat = state.copy()
     choice = (stat[col]==0).argmax(axis=0)
-    stat[col][choice] = 4
+    stat[col][choice] = con
     count = 0
     for i in stat:
         count += bubble_sort(i)
     return count
+
+def row_finder(state, con):
+    Tlen = len(state)
+    for i in range(0, Tlen):
+        if con in state[i]:
+            return i
+        
 
 def next_state(nodes, level):
     a = int(str(level-1)+"1")
@@ -193,17 +200,22 @@ def next_state(nodes, level):
                 #print(nodes[keys[j]][0])
                 #print(removal(nodes[keys[j]][0], 4))
                 #print(a)
-                S[a] = removal(nodes[keys[j]][0], 4)
-                V[a] = {keys[i]: np.min(nodes[keys[i]][1]) , keys[j]: np.min(nodes[keys[j]][1])}
+                nodei = nodes[keys[i]][0]
+                nodej = nodes[keys[j]][0]
+                rnodei = removal(nodei, 4)
+                rnodej = removal(nodej, 4)
+                rowi = row_finder(nodei, 4)
+                rowj = row_finder(nodej, 4)
+                loweri = lower(rnodei, 4, rowi)
+                lowerj = lower(rnodej, 4, rowj)
+                S[a] = removal(nodej, 4)
+                V[a] = {keys[i]: loweri , keys[j]: lowerj}
                 a += 1
+        
     return V
-    
-test = np.array([[2, 1, 0],
-                [0, 0, 0]])
-print(lower(test, 4, 1))
-print(lower(test, 4, 0))
-#print(upper(qnodes, 3))
-#print(next_state(qnodes, 3))
+
+print(upper(qnodes, 3))
+print(next_state(qnodes, 3))
 #print(Statesq)
 #print(Valueq)
 #print(Statesr)
