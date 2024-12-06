@@ -143,6 +143,8 @@ s = np.array([2, 1])
 t = np.array([2])
 
 qshuffs, qstats = main(q, 2)
+print(qshuffs)
+print(qstats)
 rshuffs, rstats = main(r, 2)
 sshuffs, sstats = main(s, 2)
 
@@ -152,8 +154,18 @@ rnodes = dict_gen(matx_gen(rstats), rshuffs, 2)
 snodes = dict_gen(matx_gen(sstats), sshuffs, 1)
 
 
-#print(qnodes)
+print(qnodes)
 
+def upper(nodes, level):
+    a = int(str(level+1)+"1")
+    U = {}
+    for i in nodes:
+        u = {}
+        for j in nodes[i][1]:
+            u[a] = j
+            a += 1
+        U[i] = u
+    return U
 
 def next_state(nodes, level):
     a = int(str(level-1)+"1")
@@ -176,7 +188,8 @@ def next_state(nodes, level):
                 a += 1
     return V
     
-print(next_state(qnodes, 3))
+print(upper(qnodes, 3))
+#print(next_state(qnodes, 3))
 #print(Statesq)
 #print(Valueq)
 #print(Statesr)
