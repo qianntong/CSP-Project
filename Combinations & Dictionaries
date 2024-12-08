@@ -96,15 +96,17 @@ def removal(MX, r): # Inputs are the state, MX, and the removed container, r
 
 # Creates dictionary of states to make indexing easier
 def dict_gen(matx, shuffles, level): # Inputs are matrix, the corresponding shuffles, and the level in the process this state is at
-    nodes = {}
-    Mlen = len(matx)
-    count = 1
-    for i in range (0, Mlen):
-        index = str(level)+str(count)
-        nodes[int(index)] = (matx[i].T, shuffles[i].T)
-        count += 1
+    nodes = {}          # Dictionary for nodes
+    Mlen = len(matx)    # Length of matrix (number of rows)
+    count = 1           # Initialize indexing at 1
+    for i in range (0, Mlen):   # Loop over rows
+        index = str(level)+str(count)   # Create a dictionary index of level and index. For example, the first index at level 3 is "31"
+        nodes[int(index)] = (matx[i].T, shuffles[i].T)  # Transpose the matrix because working with rows is easier than columns
+        count += 1  # Change dictionary index by adding 1 to it; 31 -> 32
     return nodes
 
+# Are two matrices equivalent? This tests if eithert two matrices are equal OR if the mirror image of another matrix is equal, both are
+# valid solutions for the problems due to the independent nature of the columns.
 def equivalency(MX1, MX2):
     if np.array_equal(MX1, MX2) == True:
         return True
@@ -113,6 +115,8 @@ def equivalency(MX1, MX2):
     else:
         return False
 
+# This establishes the top nodes, i.e. the final solutions. These are assigned in numerical order, with the indexing having no significance
+# other than the ability to trace the actions back
 def upper(nodes, level):
     a = int(str(level+1)+"1")
     U = {}
@@ -124,64 +128,71 @@ def upper(nodes, level):
         U[i] = u
     return U
 
-def lower(state, con, col):
-    stat = state.copy()
-    choice = (stat[col]==0).argmax(axis=0)
-    stat[col][choice] = con
+# This is for the process below the first input, calculating the next states in the sequence to find their reshuffles
+def lower(state, con, col): # Inputs are current state, the container to be removed "con", and the column of interest
+    stat = state.copy()     # Make a copy as to not change the base array
+    choice = (stat[col]==0).argmax(axis=0)  # Find the first instance of a 0 in the state
+    stat[col][choice] = con # Make it equal to the container
     count = 0
-    for i in stat:
+    for i in stat:          # Calculate the bubble sort
         count += bubble_sort(i)
-    return count
+    return count # Return the number of reshuffles
 
-def row_finder(state, con):
+# This function finds the literal row (container stacking column) which the given container is in
+def row_finder(state, con): # Search for container "con" in the state
     Tlen = len(state)
     for i in range(0, Tlen):
         if con in state[i]:
             return i
         
-
-def next_state(nodes, level, con):
-    a = int(str(level-1)+"1")
-    S = {}
-    V = {}
-    L = len(nodes)
-    keys = np.array([])
-    for i in nodes:
-        keys = np.append(keys, i)
-    for i in range(0, L):
-        for j in range(i+1, L):
+# This function determines the next state after the initial state defined in main
+def next_state(nodes, level, con):  # Inputs are nodes, the level, and the container to be removed
+    a = int(str(level-1)+"1")       # Dictionary indexing will be level-1
+    S = {}  # Dictionary of states for traceback
+    V = {}  # Dictionary of values for least cost path
+    L = len(nodes)  # Length of nodes = number of current states
+    keys = np.array([]) # Make array of the keys to sort thorugh the unique values
+    for i in nodes:     # For the nodes
+        keys = np.append(keys, i)   # Now dictionary can be indexed starting at 0.
+                                    # For example, if the first element of nodes is 31, then keys[0] = 31.
+    for i in range(0, L):       # Loop over full range of dictionary
+        for j in range(i+1, L): # Loop over all remaining states after index "i"
             truth = equivalency(removal(nodes[keys[i]][0], con), removal(nodes[keys[j]][0], con))
-            if truth == True:
-                nodei = nodes[keys[i]][0]
-                nodej = nodes[keys[j]][0]
-                rnodei = removal(nodei, con)
-                rnodej = removal(nodej, con)
-                rowi = row_finder(nodei, con)
-                rowj = row_finder(nodej, con)
-                loweri = lower(rnodei, con, rowi)
-                lowerj = lower(rnodej, con, rowj)
-                S[a] = removal(nodej, con), np.array([loweri, lowerj])
-                V[a] = {keys[i]: loweri , keys[j]: lowerj}
-                a += 1   
-    return S, V
+            # The step above determines if you remove container "con" from the node[i] and node[j] (node[i] and node[j] will never
+            # be equal due to the definitions in the loops) are they equal or not. We consider if the arrays match perfectly OR
+            # if a flip will result in equality.
+            if truth == True:   # If they are equivalent, then all of the below is executed
+                nodei = nodes[keys[i]][0]           # node i is just ith the group of columns
+                nodej = nodes[keys[j]][0]           # node j is the jth group of columns
+                rnodei = removal(nodei, con)        # Remove container con from node i
+                rnodej = removal(nodej, con)        # Remove container con from node j
+                rowi = row_finder(nodei, con)       # What row is container con in node i? This is the action taken, not necessarily optimal
+                rowj = row_finder(nodej, con)       # Same logic as above, except it is container con in node j
+                loweri = lower(rnodei, con, rowi)   # Find the reshuffles for adding container con in group i
+                lowerj = lower(rnodej, con, rowj)   # Find the reshuffles for adding container con in group j
+                S[a] = removal(nodej, con), np.array([loweri, lowerj])  # States dictionary updates with states and respective reshuffles
+                V[a] = {keys[i]: loweri , keys[j]: lowerj}  # Values matrix updates with sub dictionary with values of each respective state
+                a += 1  # Index += 1 to create a unique next index
+    return S, V         # Return states & values
 
-
-def looper(containers, level, columns):
-    order = containers[::-1]
-    Clen = len(containers)
-    qshuffs, qstats = main(containers, columns)
-    qnodes = dict_gen(matx_gen(qstats), qshuffs, level)
-    states = qnodes
-    res_dict = upper(qnodes, level)
-    current_nodes, current_shuffs = qnodes, qshuffs
-    for i in range(1, Clen):
-        current_nodes, current_shuffs = next_state(current_nodes, level, order[i])
-        level -= 1
-        for i in current_nodes:
-            res_dict[i] = current_shuffs[i]
-            states[i] = current_nodes[i]
-    return res_dict, states
+# The final function. This loops over everything to arrive at a final answer.
+def looper(containers, level, columns): # Inputs: list of containers to be stacked "containers", the penultimate level or sorting, and how
+    order = containers[::-1]            # many columns are given. The order must be the reverse of the input containers for backward
+    Clen = len(containers)              # induction. Clen is the length of the container array
+    qshuffs, qstats = main(containers, columns)         # Find the penultimate shuffles and states
+    qnodes = dict_gen(matx_gen(qstats), qshuffs, level) # Generate shuffles and states into a dictionary
+    states = qnodes                 # Begin a master dictionary of all states for traceback
+    res_dict = upper(qnodes, level) # The result dictionary will contain the full assortment of possible paths from one node to another
+    current_nodes, current_shuffs = qnodes, qshuffs # "current_nodes" and "current_shuffs" will be the temp variables during the loop
+    for i in range(1, Clen):        # Loop over the list of containers, EXCEPT for the first container as this has already been sorted
+                                    # during the step with qnodes.
+        current_nodes, current_shuffs = next_state(current_nodes, level, order[i])  # Change the temp nodes and shuffs 
+        level -= 1                          # Decrease the level down 1
+        for i in current_nodes:             # Loop over the temp nodes
+            res_dict[i] = current_shuffs[i] # Add values to the value dictionary
+            states[i] = current_nodes[i]    # Add states to state dictionary
+    return res_dict, states                 # Return values and states
         
 q = np.array([4, 3, 1, 2])
-print(looper(q, 3, 2))
+looper(q, 3, 2)
 
