@@ -242,6 +242,7 @@ def reconstruct(states, minarr, cols, cons):
     col0x = -1
     col1x = -1
     Final = np.zeros((cols, Mlen))
+    Shuffs_array = np.array([])
     for i in range(0, Mlen-1):
         New_Bay = removal(Bay, cons[i])
         removed = np.setdiff1d(Bay, New_Bay)
@@ -261,6 +262,7 @@ def reconstruct(states, minarr, cols, cons):
         Shuffs1 = bubble_sort(zero_delete(F1.copy())[::-1])
         print(f"There are {Shuffs0+Shuffs1} reshuffles at this state.")
         print("~~~")
+        Shuffs_array = np.append(Shuffs_array, Shuffs0+Shuffs1)
     print(f"Place container {cons[-1]} into column {row}")
     if row == 0:
         Final[row][col0x] = cons[-1]
@@ -274,10 +276,17 @@ def reconstruct(states, minarr, cols, cons):
     Shuffs0 = bubble_sort(zero_delete(F0.copy())[::-1])
     Shuffs1 = bubble_sort(zero_delete(F1.copy())[::-1])
     print(f"There are {Shuffs0+Shuffs1} reshuffles at this state.")
-        
+    Shuffs_array = np.append(Shuffs_array, Shuffs0+Shuffs1)
+    return Shuffs_array
+
+def function(q):
+    l = len(q)-1
+    c = 2
+    links, states = looper(q, l, c) # Input containers, level, and columns
+    new_links, mins = shortest_path(links, q)   
+    print(f"The reshuffle over time is{reconstruct(states, mins, c, q)}")  
+    end_time = time.time()
+    print(end_time-start_time)  
+   
 q = np.array([1, 2, 3, 4])
-l = len(q)-1
-c = 2
-links, states = looper(q, l, c) # Input containers, level, and columns
-new_links, mins = shortest_path(links, q)   
-reconstruct(states, mins, c, q)    
+function(q)
