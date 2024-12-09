@@ -1,8 +1,13 @@
 import itertools as it
 import numpy as np
 import time
+import random
+import pandas as pd
+import matplotlib.pyplot as plt
 
-start_time = time.time()
+###########################################
+#####        DEFINE FUNCTIONS         #####
+###########################################
 
 # The bubble sort algorithm is what we are basing our reshuffles upon. It determines the process where, if the containers are removed in 
 # priority order, how many additional moves would need to be made.
@@ -280,13 +285,103 @@ def reconstruct(states, minarr, cols, cons):
     return Shuffs_array
 
 def function(q):
+    start_time = time.time()
     l = len(q)-1
     c = 2
     links, states = looper(q, l, c) # Input containers, level, and columns
     new_links, mins = shortest_path(links, q)   
-    print(f"The reshuffle over time is{reconstruct(states, mins, c, q)}")  
+    #print(f"The reshuffle over time is{reconstruct(states, mins, c, q)}")  
     end_time = time.time()
-    print(end_time-start_time)  
-   
-q = np.array([1, 2, 3, 4])
-function(q)
+    runtime = end_time - start_time
+    #print(runtime)
+    result = reconstruct(states, mins, c, q)
+    return result[-1], result, runtime
+
+
+# function that generates a number of unique permutations for input containers to be stacked
+def generate_unique_permutations(N, n):
+    """Generates N unique permutations of the digits 1 to n.
+
+    Args:
+        N: The number of unique permutations to generate.
+        n: The number of digits to permute.
+
+    Returns:
+        A list of N unique permutations.
+    """
+
+    digits = list(range(1, n + 1))
+    permutations = []
+
+    while len(permutations) < N:
+        random.shuffle(digits)
+        permutation = tuple(digits)
+        if permutation not in permutations:
+            permutations.append(permutation)
+    #print(permutations)
+    return permutations
+
+
+###########################################
+##### CHANGE INPUTS BELOW TO RUN CODE #####
+###########################################
+
+N = 24
+n = 4
+
+
+# run multiple iterations
+def run_analysis(N, n):
+    # N is the number of runs
+    # n is the number of containers
+
+    permutations = generate_unique_permutations(N, n)
+
+    results = []
+    for permutation in permutations:
+        result = function(permutation)
+        results.append(result)
+
+    df = pd.DataFrame(results, columns=['NumReshuffs','ReshuffleCount','Runtime(s)'])
+    print(df)
+    return df
+
+df = run_analysis(N,n)
+
+print(f"Average number of reshuffles for DP: {round(df['NumReshuffs'].mean(), 2)}")
+print(f"Average runtime: {round(df['Runtime(s)'].mean(), 8)} seconds")
+
+
+###########################################
+#####    PLOT RESHUFFLES OVER TIME    #####
+###########################################
+
+# Extract the lists of arrays from the DataFrame
+data_lists = df['ReshuffleCount'].tolist()
+
+# Calculate the mean, standard deviation, min, and max for each position
+means = np.mean(data_lists, axis=0)
+stds = np.std(data_lists, axis=0)
+mins = np.min(data_lists, axis=0)
+maxs = np.max(data_lists, axis=0)
+
+# Create a plot
+plt.figure(figsize=(10, 6))
+
+# Plot the mean values
+plt.plot(means, label='Mean')
+
+# Plot the standard deviation bands
+plt.fill_between(range(len(means)), means - stds, means + stds, alpha=0.2, label='Std Dev')
+
+# Plot the min and max lines
+plt.plot(mins, linestyle='--', color='gray', label='Min')
+plt.plot(maxs, linestyle='--', color='gray', label='Max')
+
+# Customize the plot
+plt.xlabel('Time Elapsed (# iterations)')
+plt.ylabel('Number of Reshuffles')
+plt.title(f'Reshuffles over time for 2 container bay\nwith 4 incoming containers, 24 iterations')
+plt.legend()
+plt.grid(True)
+plt.show()
