@@ -255,18 +255,27 @@ def reconstruct(states, minarr, cols, cons):
             col1x -= 1
         Bay = New_Bay
         print(Final.T)
-        Shuffs = bubble_sort(Final[0])+bubble_sort(Final[1])
-        print(f"There are {Shuffs} reshuffles at this state.")
+        F0 = Final[0]
+        F1 = Final[1]
+        Shuffs0 = bubble_sort(zero_delete(F0.copy())[::-1])
+        Shuffs1 = bubble_sort(zero_delete(F1.copy())[::-1])
+        print(f"There are {Shuffs0+Shuffs1} reshuffles at this state.")
+        print("~~~")
     print(f"Place container {cons[-1]} into column {row}")
     if row == 0:
-        Final[removed_row][col0x] = cons[-1]
+        Final[row][col0x] = cons[-1]
         col0x -= 1
     elif row == 1:
-        Final[removed_row][col1x] = cons[-1]
+        Final[row][col1x] = cons[-1]
         col1x -= 1
     print(Final.T)
+    F0 = Final[0]
+    F1 = Final[1]
+    Shuffs0 = bubble_sort(zero_delete(F0.copy())[::-1])
+    Shuffs1 = bubble_sort(zero_delete(F1.copy())[::-1])
+    print(f"There are {Shuffs0+Shuffs1} reshuffles at this state.")
         
-q = np.array([2, 1, 4, 3])
+q = np.array([1, 2, 3, 4])
 l = len(q)-1
 c = 2
 links, states = looper(q, l, c) # Input containers, level, and columns
