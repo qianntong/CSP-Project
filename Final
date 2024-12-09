@@ -195,10 +195,7 @@ def looper(containers, level, columns): # Inputs: list of containers to be stack
             res_dict[i] = current_shuffs[i] # Add values to the value dictionary
             states[i] = current_nodes[i]    # Add states to state dictionary
     return res_dict, states                 # Return values and states
-        
-q = np.array([1, 2, 3, 4])
-links, states = looper(q, 3, 2) # Input containers, level, and columns
-#print(links)
+
 
 def find_minimum(links, index):
     path = {}
@@ -222,19 +219,56 @@ def shortest_path(links, cons):
                 for k in links[j]:
                     if i == k:
                         links[j][k] += b[i]
-    print(11)
-    min_key_1 = min(links[11], key = links[11].get)
-    print(min_key_1)
-    
-    min_key_2 = min(links[min_key_1], key = links[min_key_1].get)
-    print(min_key_2)
-    min_key_3 = min(links[min_key_2], key = links[min_key_2].get)
-    print(min_key_3)
-    
-    print("Total Cost:", links[11][min_key_1])
-    return links
+    mindex = 11
+    minarr = np.array([mindex])
+    for i in range(0,Qlen - 1):
+        mindex = min(links[mindex], key = links[mindex].get) 
+        minarr = np.append(minarr, mindex)
+        if i == 0:
+            print("Total Cost:", links[11][mindex])
+    return links, minarr
 
-      
-    
-new_links = shortest_path(links, q)       
-print(new_links)
+def reconstruct(states, minarr, cols, cons):
+    Mlen = len(minarr)
+    step = minarr[Mlen-2]
+    Bay = states[step][0]
+    row = np.argmin(states[step][1])
+    j = 0
+    i = Bay[row][j]
+    while i != 0:
+        j += 1
+        i = Bay[row][j] 
+    Bay[row][j] = cons[-1]
+    col0x = -1
+    col1x = -1
+    Final = np.zeros((cols, Mlen))
+    for i in range(0, Mlen-1):
+        New_Bay = removal(Bay, cons[i])
+        removed = np.setdiff1d(Bay, New_Bay)
+        removed_row = np.where(Bay == removed)[0][0]
+        print(f"Place container {cons[i]} into column {removed_row}")
+        if removed_row == 0:
+            Final[removed_row][col0x] = cons[i]
+            col0x -= 1
+        elif removed_row == 1:
+            Final[removed_row][col1x] = cons[i]
+            col1x -= 1
+        Bay = New_Bay
+        print(Final.T)
+        Shuffs = bubble_sort(Final[0])+bubble_sort(Final[1])
+        print(f"There are {Shuffs} reshuffles at this state.")
+    print(f"Place container {cons[-1]} into column {row}")
+    if row == 0:
+        Final[removed_row][col0x] = cons[-1]
+        col0x -= 1
+    elif row == 1:
+        Final[removed_row][col1x] = cons[-1]
+        col1x -= 1
+    print(Final.T)
+        
+q = np.array([2, 1, 4, 3])
+l = len(q)-1
+c = 2
+links, states = looper(q, l, c) # Input containers, level, and columns
+new_links, mins = shortest_path(links, q)   
+reconstruct(states, mins, c, q)    
